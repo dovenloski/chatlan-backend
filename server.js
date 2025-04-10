@@ -24,7 +24,6 @@ let config = {
   clavePanel: "#acceso123"
 };
 
-// Cargar config existente si hay
 if (fs.existsSync(configPath)) {
   config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 }
@@ -48,7 +47,13 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     });
 
     const fileUrl = response.data.link;
-    io.emit("message", { file: fileUrl });
+
+    // FIX: incluir user para evitar "Anon: undefined"
+    io.emit("message", {
+      user: "Archivo",
+      file: fileUrl
+    });
+
     res.sendStatus(200);
   } catch (err) {
     console.error("Error al subir a file.io:", err.message);
