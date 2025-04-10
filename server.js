@@ -13,6 +13,14 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
+// Habilitar CORS para peticiones fetch
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
+
 const upload = multer({ dest: "uploads/" });
 const configPath = path.join(__dirname, "config.json");
 
@@ -46,13 +54,18 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       headers: formData.getHeaders()
     });
 
-    const fileUrl = response.data.link;
+    console.log("Respuesta de file.io:", response.data);
 
-    // FIX: incluir user para evitar "Anon: undefined"
-    io.emit("message", {
-      user: "Archivo",
-      file: fileUrl
-    });
+    const fileUrl = response.data && response.data.link;
+
+    if (fileUrl) {
+      io.emit("message", {
+        user: "Archivo",
+        file: fileUrl
+      });
+    } else {
+      console.error("No se recibió enlace válido de file.io");
+    }
 
     res.sendStatus(200);
   } catch (err) {
@@ -83,5 +96,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log("Servidor ChatLAN corriendo...");
+  console.log("Servidor ChatLAN 2.3.2 corriendo...");
 });
