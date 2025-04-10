@@ -44,18 +44,17 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   const fileName = req.file.originalname;
 
   try {
-    // Paso 1: Obtener servidor dinámico de GoFile
     const getServer = await axios.get("https://api.gofile.io/getServer");
     const serverName = getServer.data?.data?.server;
     console.log("Servidor GoFile asignado:", serverName);
 
     if (!serverName) throw new Error("No se pudo obtener servidor GoFile");
 
-    // Paso 2: Subir el archivo al servidor correcto
     const formData = new FormData();
     formData.append("file", fs.createReadStream(filePath), fileName);
+    formData.append("server", serverName);  // Campo requerido ahora
 
-    const uploadResponse = await axios.post(`https://${serverName}.gofile.io/uploadFile`, formData, {
+    const uploadResponse = await axios.post("https://api.gofile.io/uploadFile", formData, {
       headers: formData.getHeaders()
     });
 
@@ -101,5 +100,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log("Servidor ChatLAN 2.4.1 corriendo...");
+  console.log("Servidor ChatLAN 2.4.2 corriendo...");
 });
