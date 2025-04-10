@@ -4,6 +4,7 @@ const multer = require("multer");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const FormData = require("form-data");
 const { Server } = require("socket.io");
 
 const app = express();
@@ -18,10 +19,12 @@ const configPath = path.join(__dirname, "config.json");
 let config = {
   title: "ChatLAN",
   welcome: "¡Bienvenido al chat!",
-  bg: ""
+  bg: "",
+  bgColor: "#ffffff",
+  clavePanel: "#acceso123"
 };
 
-// Cargar config existente
+// Cargar config existente si hay
 if (fs.existsSync(configPath)) {
   config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 }
@@ -63,7 +66,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateConfig", (newConfig) => {
-    config = { ...config, ...newConfig };
+    config = {
+      ...config,
+      ...newConfig,
+      bgColor: newConfig.bgColor || config.bgColor,
+      clavePanel: newConfig.clavePanel || config.clavePanel
+    };
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     io.emit("configUpdate", config);
   });
