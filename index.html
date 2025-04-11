@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatLAN</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="light">
+  <div id="chat-app">
+    <header>
+      <h1 id="chat-title">ChatLAN</h1>
+      <button id="theme-toggle" title="Cambiar tema">☀️</button>
+    </header>
+
+    <div id="chat-container"></div>
+
+    <form id="message-form">
+      <input type="text" id="message-input" placeholder="Escribe un mensaje..." autocomplete="off" />
+      <label for="file-input" id="file-label">📎</label>
+      <input type="file" id="file-input" hidden />
+    </form>
+  </div>
+
+  <div id="config-panel" style="display:none;">
+    <h2>Configuración secreta</h2>
+    <label>Título del chat: <input id="config-title" /></label><br/>
+    <label>Mensaje bienvenida: <input id="config-welcome" /></label><br/>
+    <label>Fondo URL: <input id="config-bg" /></label><br/>
+    <label>Color de fondo: <input type="color" id="config-bgcolor" /></label><br/>
+    <label>Nueva contraseña: <input type="text" id="config-pass" /></label><br/>
+    <button id="save-config">Guardar cambios</button>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
