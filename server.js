@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const http = require("http");
 const multer = require("multer");
@@ -13,7 +14,6 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
-// CORS
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST");
@@ -44,23 +44,17 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   const fileName = req.file.originalname;
 
   try {
-    const getServer = await axios.get("https://api.gofile.io/getServer");
-    const serverName = getServer.data?.data?.server;
-    console.log("Servidor GoFile asignado:", serverName);
-
-    if (!serverName) throw new Error("No se pudo obtener servidor GoFile");
-
     const formData = new FormData();
     formData.append("file", fs.createReadStream(filePath), fileName);
-    formData.append("server", serverName);  // Campo requerido ahora
+    formData.append("token", process.env.GOFILE_TOKEN);
 
-    const uploadResponse = await axios.post("https://api.gofile.io/uploadFile", formData, {
+    const response = await axios.post("https://api.gofile.io/uploadFile", formData, {
       headers: formData.getHeaders()
     });
 
-    console.log("Respuesta de GoFile:", uploadResponse.data);
+    console.log("Respuesta de GoFile:", response.data);
 
-    const fileUrl = uploadResponse.data?.data?.downloadPage;
+    const fileUrl = response.data?.data?.downloadPage;
 
     if (fileUrl) {
       io.emit("message", {
@@ -100,5 +94,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log("Servidor ChatLAN 2.4.2 corriendo...");
+  console.log("Servidor ChatLAN 2.5 corriendo con autenticación GoFile...");
 });
